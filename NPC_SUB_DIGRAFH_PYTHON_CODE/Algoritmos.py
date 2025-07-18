@@ -40,7 +40,10 @@ def BipartiteSubsetDC(G : nx.Graph, k : int) -> bool:
         G2.add_edge(edges[0][0],edges[0][1])
         a = __BipartiteSubsetDC(G1,k_left,edges[1:])
         b = __BipartiteSubsetDC(G2,k_left-1,edges[1:]) if nx.is_bipartite(G2) else False
-        return a or b
+        if b:
+            return True
+        if a:
+            return True
 
     return __BipartiteSubsetDC(__G,k,list(G.edges()))
 
@@ -54,16 +57,17 @@ def BipartiteSubsetBT(G : nx.Graph, k : int) -> bool:
   if k == 0 or  (k == len(G.nodes) and nx.is_bipartite(G)):
       return True
 
-  def __BipartiteSubsetBT(_G : nx.Graph, k_pass : int =  0) -> bool:
+  def __BipartiteSubsetBT(_G : nx.Graph, k_pass : int =  0, init = 0) -> bool:
 
       if k == k_pass:
         return True
-
-      for edge in G.edges()-_G.edges(): #Empieza con E vertices por analizar
-          #G1 = _G.copy() # O(V + E)
-          _G.add_edge(edge[0],edge[1]) # +1
+      if init + k - kleft <k: #Revisar bien condicion de falla (Falta de Vertices)
+        return False
+      
+    for i in range(init, len(G.edges())): #Empieza con E vertices por analizar
+          _G.add_edge(G.edges()[i][0],G.edges()[i][1]) # +1
           if nx.is_bipartite(_G): # O (V + E)
-              if __BipartiteSubsetBT(_G, k_pass + 1):
+              if __BipartiteSubsetBT(_G, k_pass + 1, init + i + 1):
                 return True
           _G.remove_edge(edge[0],edge[1]) # +1
       return False
