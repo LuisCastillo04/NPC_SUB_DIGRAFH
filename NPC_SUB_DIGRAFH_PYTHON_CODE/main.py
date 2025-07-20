@@ -56,7 +56,7 @@ def tests():
     methods = [BipartiteSubsetBF, BipartiteSubsetDC, BipartiteSubsetBT]
 
     with open('results.csv', 'w') as f:
-        f.write('vertices;aristas;n;k;metodo;tiempo\n')   # cabecera
+        f.write('vertices;aristas;n;k;tiempo BF;tiempo DC;tiempo BT\n')   # cabecera
 
         for _ in range(10):
             G = nx.Graph()
@@ -65,7 +65,7 @@ def tests():
             k = rd.randint(0, nodes[-1] * (nodes[-1] - 1) // 2)
             k1 = rd.randint(0, k)
             G.add_edges_from(add_random_edges(nodes, k))
-
+            f.write(f'[1...{nodes[-1]}];{G.edges};{k};{k1}')
             for method in methods:
                 ti = 0
                 for _ in range(5):
@@ -76,7 +76,8 @@ def tests():
                     ti += elapsed
                 if ti != 'TIMEOUT':
                     ti = ti / 5
-                f.write(f'[1...{nodes[-1]}];{G.edges};{k};{k1};{method.__name__};{ti}\n')
+                f.write(f';{ti}')
+        f.write('\n')    
 
 def main():
     tests()
