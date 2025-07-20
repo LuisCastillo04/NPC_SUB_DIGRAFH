@@ -56,7 +56,7 @@ def BipartiteSubsetBT(G : nx.Graph, k : int) -> bool:
       raise ValueError(f"k debe ser menor o igual al numero de aristas del grafo ({len(G.edges())})")
   if k <= 2 :
       return True
-
+  
   def __BipartiteSubsetBT(_G : nx.Graph, k_pass : int =  0, init = 0) -> bool:
 
       if k == k_pass:
@@ -76,4 +76,5 @@ def BipartiteSubsetBT(G : nx.Graph, k : int) -> bool:
 
   G1 = nx.Graph()
   G1.add_nodes_from(G.nodes) #O (V)
+  edge_list = list(G.edges())
   return __BipartiteSubsetBT(G1)
