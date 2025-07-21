@@ -37,22 +37,27 @@ def BipartiteSubsetBF(G : nx.Graph, k : int, counter: OpCounter | None = None) -
     G1.add_nodes_from(G.nodes); counter.inc(len(G))  #O(V)
     if k < 0:
         raise ValueError("k debe ser mayor o igual a 0")
+    
     if k > len(G.edges()):
         raise ValueError(f"k debe ser menor o igual al numero de aristas del grafo ({len(G.edges())})")
+    
     if  k <= 2:
         counter.inc()
-        return True ; counter.ops
+        return True , counter.ops
 
 
     for i in combinations(G.edges(), k): #Se repite maximo E (Ningun posible subgrafo de ese tamaño)
     #Peor Caso k = |E|/2
-        G1.add_edges_from(i), counter.inc(len(i)) # O(E) 
-        counter.inc()
+        G1.add_edges_from(i)
+        counter.inc(len(i)) # O(E) 
 
+        counter.inc()
         if nx.is_bipartite(G1): # O(V + E)
-            return True, G1.edges; counter.ops
+            return True, counter.ops
+        
         else:
-            G1.remove_edges_from(i), counter.inc(len(i))  #O(E)
+            G1.remove_edges_from(i)
+            counter.inc(len(i))  #O(E)
     return False, counter.ops
 
 # ----------------------------------------------------------------------
@@ -83,6 +88,7 @@ def BipartiteSubsetDC(G : nx.Graph, k : int,counter: OpCounter | None = None) ->
 
         counter.inc()
         a = __BipartiteSubsetDC(G1,k_left,edges[1:])
+        counter.inc()
         b = __BipartiteSubsetDC(G2,k_left-1,edges[1:]) if nx.is_bipartite(G2) else False
         
         if b:
@@ -121,6 +127,7 @@ def BipartiteSubsetBT(G : nx.Graph, k : int,counter: OpCounter | None = None) ->
             _G.add_edge(u,v) ; counter.inc()# +1
             counter.inc()
             if nx.is_bipartite(_G): # O (V + E)
+                counter.inc()                 # cuenta la llamada
                 if __BipartiteSubsetBT(_G, k_pass + 1, i + 1):
                     return True
             _G.remove_edge(u,v); counter.inc() #+1
