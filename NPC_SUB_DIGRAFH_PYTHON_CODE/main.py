@@ -77,7 +77,7 @@ def tests():
                 if ti != 'TIMEOUT':
                     ti = ti / 5
                 f.write(f';{ti}')
-             f.write('\n')    
+                f.write('\n')    
 
 def main():
     tests()
