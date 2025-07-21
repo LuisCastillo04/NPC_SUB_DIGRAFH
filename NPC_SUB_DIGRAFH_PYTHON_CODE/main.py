@@ -14,14 +14,18 @@ N_TESTS   = 10    # nº de instancias que se generarán
 REPS      = 5     # nº de repeticiones por algoritmo
 # ---------------------------------------------------------------------
 
-def _worker(pipe, func, args, kwargs):
+def _worker(pipe, func, shared_ops, args, kwargs):
     """Subproceso que cronometra y devuelve (tiempo, retorno)."""
+    counter = OpCounter(shared_ops)
+    kwargs = kwargs or {}
+    kwargs['counter'] = counter             # ← se pasa al algoritmo
+
     cron = Timer.timer(); cron.start()
     try:
-        ret = func(*args, **(kwargs or {}))   # ← (bool, ops)
-        pipe.send((cron.stop(), ret))         # enviamos tupla
+        ret = func(*args, **kwargs)         # (bool, ops)  o  bool
+        pipe.send((cron.stop(), ret))
     except Exception as e:
-        pipe.send(e)                          # propagamos excepción
+        pipe.send(e)
     finally:
         pipe.close()
 
@@ -32,20 +36,25 @@ def run_with_timeout(func, args=(), kwargs=None, limit=TIMEOUT):
     Devuelve el tiempo (float) cronometrado con Timer.timer()
     o None si se alcanza el límite de tiempo.
     """
-    parent_conn, child_conn = mp.Pipe(duplex=False)
-    p = mp.Process(target=_worker, args=(child_conn, func, args, kwargs))
-    p.start()
-    p.join(limit)
+    shared_ops = mp.Value('i', 0)           # ← valor compartido
 
-    if p.is_alive():                     # ⏰ se agotó el tiempo
-        p.terminate()
-        p.join()
-        return None
 
-    result = parent_conn.recv()
+    parent, child = mp.Pipe(duplex=False)
+    p = mp.Process(target=_worker,
+                   args=(child, func, shared_ops, args, kwargs))
+    p.start(); p.join(limit)
+
+     # ----- se agotó el tiempo -----------------------------------------
+    if p.is_alive():
+        ops_so_far = shared_ops.value       # ← lo que llevamos contado
+        p.terminate(); p.join()
+        return ("TIMEOUT", ops_so_far)
+
+    # ----- terminó a tiempo -------------------------------------------
+    result = parent.recv()
     if isinstance(result, Exception):
-        raise result                     # relanza excepción del hijo
-    return result                        # tiempo en segundos
+        raise result
+    return result                             # tiempo en segundos
 # ---------------------------------------------------------------------
 
 def add_random_edges(nodes: list, num_edges: int):
@@ -92,21 +101,25 @@ def tests():
 
                 for _ in range(REPS):
                     res = run_with_timeout(method, args=(G, k1))
-                    if res is None:            # se produjo TIMEOUT
+
+                    
+                    if isinstance(res, tuple) and res[0] == "TIMEOUT":
                         timeout = True
+                        op_acum += res[1]      # sumamos las ops que llevaba
                         break
 
                     elapsed, ret = res 
-                    if isinstance(ret, tuple) and len(ret) == 2 and isinstance(ret[1], int):
-                        _, ops = ret                # forma correcta (bool, ops)
-                    else:
-                        ops = 0                     # no hay contador válido
-
+                    ops = (
+                        ret[1]
+                        if isinstance(ret, tuple) and isinstance(ret[1], int)
+                        else 0
+                    )
                     ti_acum += elapsed
                     op_acum += ops
 
+
                 if timeout:
-                    fila.extend(['TIMEOUT', 'TIMEOUT'])
+                    fila.extend(['TIMEOUT', str(op_acum)])   # tiempo=TIMEOUT, ops reales
                 else:
                     fila.extend([f'{ti_acum/REPS:.6f}', str(op_acum // REPS)])
 

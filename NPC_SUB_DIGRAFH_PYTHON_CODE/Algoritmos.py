@@ -5,14 +5,26 @@ from itertools import combinations
 
 # ------------FUNCION ENCARGADA DE CONTAR OPERACIONES----------------
 class OpCounter:
-    """Contador de operaciones elementales (se pasa por referencia)."""
-    def __init__(self) -> None:
-        self.ops: int = 0
+    """Contador de operaciones (local o compartido)."""
+    def __init__(self, shared = None):
+        # Si no se pasa valor compartido usamos un int normal
+        if shared is None:
+            self._local = 0
+            self._shared = None
+        else:
+            self._local = None
+            self._shared = shared            # mp.Value('i', 0)
 
     def inc(self, n: int = 1) -> None:
-        """Suma n operaciones (por defecto, 1)."""
-        self.ops += n
+        if self._shared is None:
+            self._local += n
+        else:                               # acceso con lock
+            with self._shared.get_lock():
+                self._shared.value += n
 
+    @property
+    def ops(self) -> int:
+        return self._local if self._shared is None else self._shared.value
 
 # ----------------------------------------------------------------------
 # 1. Fuerza bruta
