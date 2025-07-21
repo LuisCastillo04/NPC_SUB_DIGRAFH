@@ -1,3 +1,4 @@
+# Algoritmos.py
 import networkx as nx
 from itertools import combinations
 
@@ -27,14 +28,17 @@ def BipartiteSubsetBF(G : nx.Graph, k : int, counter: OpCounter | None = None) -
     if k > len(G.edges()):
         raise ValueError(f"k debe ser menor o igual al numero de aristas del grafo ({len(G.edges())})")
     if  k <= 2:
-        return True ; counter.inc()
+        counter.inc()
+        return True ; counter.ops
+
+
     for i in combinations(G.edges(), k): #Se repite maximo E (Ningun posible subgrafo de ese tamaño)
     #Peor Caso k = |E|/2
         G1.add_edges_from(i), counter.inc(len(i)) # O(E) 
         counter.inc()
 
         if nx.is_bipartite(G1): # O(V + E)
-            return True, G1.edges; counter.inc()
+            return True, G1.edges; counter.ops
         else:
             G1.remove_edges_from(i), counter.inc(len(i))  #O(E)
     return False, counter.ops
