@@ -125,7 +125,6 @@ def BipartiteSubsetBT(G : nx.Graph, k : int,counter: OpCounter | None = None) ->
         for i in range(init, len(edges_list)):
             u,v = edges_list[i]
             _G.add_edge(u,v) ; counter.inc()# +1
-            counter.inc()
             if nx.is_bipartite(_G): # O (V + E)
                 counter.inc()                 # cuenta la llamada
                 if __BipartiteSubsetBT(_G, k_pass + 1, i + 1):

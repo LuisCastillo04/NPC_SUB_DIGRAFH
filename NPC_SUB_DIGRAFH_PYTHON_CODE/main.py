@@ -9,7 +9,7 @@ from itertools import combinations
 
 # ---------------------------------------------------------------------
 TIMEOUT   = 15     # s máximos por llamada
-SEED_BASE = 42    # cambia este valor para otra serie reproducible
+SEED_BASE = 215    # cambia este valor para otra serie reproducible
 N_TESTS   = 10    # nº de instancias que se generarán
 REPS      = 5     # nº de repeticiones por algoritmo
 # ---------------------------------------------------------------------
