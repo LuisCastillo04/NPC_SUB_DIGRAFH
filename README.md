@@ -1,93 +1,66 @@
-# NPC_SUB_DIGRAFH
-Problema NP-completo
+# Subgrafos bipartitos: análisis de un problema NP-completo
 
-**Autores:** 
-- Sebastian Rodriguez Giraldo - srodriguezgi
-- Luis Eduardo Miño Castillo - lmino
+Proyecto académico sobre **Bipartite Subgraph**, con implementaciones en **Python y Java** y comparación experimental de estrategias de búsqueda.
 
-## Fuente:
->- **Number:** 5
->- **Name:** Bipartite Subgraph [GT25] 2
->- **Input:** An n-node undirected graph G(V,E) with node set V and edge set E; a positive integer k with k<=|E|.
->- **Question:** Is there a subset, F of the edges of G, having size at least k and such that the graph H(V,F) is bipartite?- >**Comments:** G(V,E) is bipartite if the nodes can be partitioned into two disjoint sets U and W such that every edge of G connects a node in U to a node in W, i.e. no two nodes in U (resp. W) form an edge of G.
+## Problema
 
-Figura como Bipartite Subgraph [GT25] 2 en la [lista anotada de problemas NP-completos](https://www.csc.liv.ac.uk/~ped/teachadmin/COMP202/annotated_np.html).
+Dado un grafo no dirigido `G = (V, E)` y un entero `k`, se busca determinar si existe un subconjunto `F ⊆ E` con al menos `k` aristas tal que `H = (V, F)` sea bipartito. Un grafo es bipartito cuando sus vértices pueden dividirse en dos conjuntos y cada arista conecta vértices de conjuntos distintos.
 
-# Especificaciones del dispositivo
+La referencia del trabajo es **Bipartite Subgraph [GT25]**, citada en la [lista anotada de problemas NP-completos](https://www.csc.liv.ac.uk/~ped/teachadmin/COMP202/annotated_np.html).
 
----
+## Qué contiene
 
-## Hardware
+- Implementaciones en Python y Java.
+- En Python: fuerza bruta, divide y vencerás y backtracking.
+- Generación de grafos aleatorios con semillas reproducibles.
+- Medición de tiempos y conteo instrumentado de operaciones.
+- Resultados en CSV e informes del trabajo.
 
-- Nombre del dispositivo: Acer Nitro 5  
-- Procesador: Intel(R) Core™ i5-10300H CPU @ 2.50 GHz  
-- RAM instalada: 16.0 GB (15.8 GB utilizables)  
-- Id. del dispositivo: 23D84469-CAEA-4B14-BC03-5AABB4C8AF3C  
-- Id. del producto: 00325-81890-07442-AAOEM  
-- Tipo de sistema: Sistema operativo de 64 bits, procesador x64  
-- Lápiz y entrada táctil: Compatible con entrada manuscrita  
+## Estructura
 
----
+| Carpeta | Contenido |
+| --- | --- |
+| [NPC_SUB_DIGRAFH_PYTHON_CODE](NPC_SUB_DIGRAFH_PYTHON_CODE/) | Algoritmos, programa experimental, temporizador, pruebas y resultados CSV. |
+| [NPC_SUB_DIGRAFH_JAVA_CODE](NPC_SUB_DIGRAFH_JAVA_CODE/) | Implementación Java y dependencias del proyecto. |
+| [INFORME_Y_NOTEBOOK](INFORME_Y_NOTEBOOK/) | Material de análisis e informe académico. |
 
-## Software (Windows)
+## Ejecutar el experimento en Python
 
-- Edición: Windows 11 Home  
-- Versión: 24H2  
-- Fecha de instalación: 23/05/2025  
-- Compilación del SO: 26100.4652  
-- Paquete de experiencia de características de Windows: 1000.26100.128.0  
+Desde una terminal, con Python instalado:
 
----
+```bash
+git clone https://github.com/LuisCastillo04/NPC_SUB_DIGRAFH.git
+cd NPC_SUB_DIGRAFH/NPC_SUB_DIGRAFH_PYTHON_CODE
+python -m pip install networkx pandas
+python main.py
+```
 
-## Términos y licencias
+La versión de Python documentada en el trabajo original es **3.13.5**. `Algoritmos.py` utiliza NetworkX y `main.py` también importa pandas.
 
-- Contratos de servicios de Microsoft  
-- Condiciones de licencia del software de Microsoft  
+`main.py` genera el archivo `results.csv` en el directorio de ejecución y **sobrescribe ese archivo si ya existe**. Guarda una copia antes de ejecutar si deseas conservar una medición anterior.
 
+Los parámetros del experimento están al comienzo de `main.py`:
 
-## Instrucciones de Uso
+| Parámetro | Valor actual | Propósito |
+| --- | --- | --- |
+| `SEED_BASE` | `777` | Semilla base para generar instancias reproducibles. |
+| `N_TESTS` | `20` | Número de instancias generadas. |
+| `REPS` | `5` | Repeticiones por algoritmo. |
+| `TIMEOUT` | `15` segundos | Límite por llamada a un algoritmo. |
 
-Este repositorio contiene dos implementaciones del problema **Bipartite Subgraph**:
+El CSV registra la instancia, los tiempos y los contadores de cada estrategia. `TIMEOUT` indica que una llamada alcanzó el límite configurado; no equivale a una respuesta negativa al problema.
 
-- **Python** en `NPC_SUB_DIGRAFH_PYTHON_CODE`  
-- **Java** en `NPC_SUB_DIGRAFH_JAVA_CODE`
+## Implementación Java
 
----
+El entorno documentado originalmente utiliza **JDK 22** y **Apache NetBeans**. El proyecto se encuentra en `NPC_SUB_DIGRAFH_JAVA_CODE/` y referencia las bibliotecas `jgrapht-core.jar` y `commons-math3.jar` en su carpeta `lib/`.
 
-## 📦 Requisitos (Windows)
+## Interpretación de resultados
 
-### Java
-- **JDK 22**  
-  1. Descarga el instalador Windows x64 desde  
-     https://www.oracle.com/java/technologies/javase/jdk22-archive-downloads.html  
-  2. Ejecuta el `.exe`, marca **Add to PATH** y finaliza la instalación.  
-  3. Verifica en PowerShell:  
-     ```powershell
-     java -version
-     ```
-- **IDE: NetBeans**  
-  1. Descarga el instalador desde https://netbeans.apache.org/download/index.html  
-  2. Ejecuta el `.exe` y selecciona el JDK 22 durante la instalación.
+Este trabajo tiene fines académicos. Los tiempos dependen del tamaño y la estructura de los grafos, la máquina y el entorno de ejecución. Los contadores reflejan la instrumentación del código y no representan directamente instrucciones del procesador.
 
-- **Dependencias Java** (en `NPC_SUB_DIGRAFH_JAVA_CODE/lib/`):  
-  - `jgrapht-core.jar`  
-  - `commons-math3.jar`  
+Equipo de referencia del trabajo original: Intel Core i5-10300H, 16 GB de RAM y Windows 11 de 64 bits.
 
----
+## Autores
 
-### Python
-- **Python 3.13.5**  
-  1. Descarga el instalador Windows x64 en  
-     [https://www.python.org/downloads/release/python-135/](https://www.python.org/downloads/)  
-  2. Ejecuta el `.exe`, marca **Add Python to PATH** y finaliza la instalación.  
-  3. Verifica en PowerShell:  
-     ```powershell
-     python --version
-     ```
-- **IDE: Visual Studio Code**  
-  1. Descarga el instalador desde https://code.visualstudio.com/download  
-  2. Instala y, desde el Marketplace, agrega la extensión **Python** (Microsoft).  
-
-
-
-
+- Sebastian Rodriguez Giraldo — `srodriguezgi`
+- Luis Eduardo Miño Castillo — `lmino`
